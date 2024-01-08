@@ -10,7 +10,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(option =>
+{
+    option.ReturnHttpNotAcceptable = true;
+    option.RespectBrowserAcceptHeader = true;
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 

@@ -9,7 +9,7 @@
         public int DepartmentId { get; set; }
         public string ContactNumber { get; set; }
         public string Email { get; set; }
-        public DateTime StartDate { get; set; }
+        public DateTime StartDate { get; set; } 
         public DateTime? TerminationDate { get; set; }
         public string TerminationReason { get; set; }
         public bool IsActive { get; set; }
