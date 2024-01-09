@@ -40,8 +40,41 @@ namespace Human_Resource_API.Controllers
         }
 
 
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+
+        public ActionResult<Employee> CreateEmployee([FromBody]Employee newEmployee)
+        {
+            if(newEmployee == null) return BadRequest();
+
+            var empId = _db.Employees.FirstOrDefault<Employee>(i => (i.EmployeeId == newEmployee.EmployeeId) );
+
+            if(empId == null)
+            {
+                _db.Employees.Add(newEmployee);
+                _db.SaveChanges();
+                return CreatedAtRoute("GetEmployee", new { id = newEmployee.EmployeeId });
+            }
+            return BadRequest();
+
+        }
 
 
+        [HttpDelete]
+
+        public ActionResult<Employee> RemoveEmployee(int id)
+        {
+            if(id==0) return BadRequest();
+            var empId = _db.Employees.FirstOrDefault(i=> (i.EmployeeId == id));
+            if (empId == null) return BadRequest();
+
+            _db.Remove(empId);
+            _db.SaveChanges();
+
+            return Ok(empId);
+        }
 
 
     }
