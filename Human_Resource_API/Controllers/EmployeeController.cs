@@ -45,13 +45,13 @@ namespace Human_Resource_API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status201Created)]
 
-        public ActionResult<Employee> CreateEmployee([FromBody]Employee newEmployee)
+        public ActionResult<Employee> CreateEmployee([FromBody] Employee newEmployee)
         {
-            if(newEmployee == null) return BadRequest();
+            if (newEmployee == null) return BadRequest();
 
-            var empId = _db.Employees.FirstOrDefault<Employee>(i => (i.EmployeeId == newEmployee.EmployeeId) );
+            var empId = _db.Employees.FirstOrDefault<Employee>(i => (i.EmployeeId == newEmployee.EmployeeId));
 
-            if(empId == null)
+            if (empId == null)
             {
                 _db.Employees.Add(newEmployee);
                 _db.SaveChanges();
@@ -59,6 +59,23 @@ namespace Human_Resource_API.Controllers
             }
             return BadRequest();
 
+        }
+
+        [HttpPut("{id:int}")]
+       
+        public ActionResult<Employee> UpdateEmployee(int id, [FromBody]Employee updatedEmplpoyee)
+        {
+            if(updatedEmplpoyee == null) return BadRequest();
+
+            var getId = _db.Employees.FirstOrDefault(i => i.EmployeeId == id);
+            if (getId == null) return BadRequest();
+
+            if (updatedEmplpoyee.EmployeeId != id) return BadRequest();
+            
+            _db.Employees.Update(updatedEmplpoyee);
+            _db.SaveChanges();
+
+            return NoContent();
         }
 
 
