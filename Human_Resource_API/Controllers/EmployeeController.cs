@@ -9,12 +9,15 @@ namespace Human_Resource_API.Controllers
     public class EmployeeController : Controller
     {
         private readonly ApplicationDbContext _db;
+        private readonly ILogger<EmployeeController> _logger;
 
-        public EmployeeController(ApplicationDbContext db)
+        public EmployeeController(ApplicationDbContext db, ILogger<EmployeeController> logger)
         {
+            _logger = logger;
             _db = db;
         }
 
+       
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -22,6 +25,7 @@ namespace Human_Resource_API.Controllers
 
         public ActionResult<IEnumerable<Employee>> GetEmployees()
         {
+            _logger.LogInformation("Making Get All Employees call");
             return Ok(_db.Employees.ToList());
         }
 
@@ -33,6 +37,7 @@ namespace Human_Resource_API.Controllers
 
         public ActionResult<IEnumerable<Employee>> GetEmployee(int id)
         {
+            _logger.LogInformation("Making Get Employee with id call");
             if (id <= 0) return BadRequest();
             Employee employee = _db.Employees.FirstOrDefault(i => (i.EmployeeId == id));
             if (employee == null) return NotFound();
@@ -47,6 +52,8 @@ namespace Human_Resource_API.Controllers
 
         public ActionResult<Employee> CreateEmployee([FromBody] Employee newEmployee)
         {
+            _logger.LogInformation("Making create Employee call");
+
             if (newEmployee == null) return BadRequest();
 
             var empId = _db.Employees.FirstOrDefault<Employee>(i => (i.EmployeeId == newEmployee.EmployeeId));
@@ -65,7 +72,9 @@ namespace Human_Resource_API.Controllers
        
         public ActionResult<Employee> UpdateEmployee(int id, [FromBody]Employee updatedEmplpoyee)
         {
-            if(updatedEmplpoyee == null) return BadRequest();
+            _logger.LogInformation("Making upfate Employee call");
+
+            if (updatedEmplpoyee == null) return BadRequest();
 
             var getId = _db.Employees.FirstOrDefault(i => i.EmployeeId == id);
             if (getId == null) return BadRequest();

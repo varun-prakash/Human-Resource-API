@@ -1,9 +1,14 @@
 using Human_Resource_API.Data;
 using Microsoft.EntityFrameworkCore;
 using Human_Resource_API.Extensions;
+using Serilog;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
+Log.Logger = new LoggerConfiguration().MinimumLevel.Information().WriteTo.File("log/logs.txt", rollingInterval: RollingInterval.Day).CreateLogger();
+
+builder.Host.UseSerilog();
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
 {
@@ -35,6 +40,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
 
 app.MapControllers();
 
