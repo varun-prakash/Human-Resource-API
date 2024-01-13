@@ -1,6 +1,6 @@
 using Human_Resource_API.Data;
 using Microsoft.EntityFrameworkCore;
-
+using Human_Resource_API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +15,10 @@ builder.Services.AddControllers(option =>
     option.ReturnHttpNotAcceptable = true;
     option.RespectBrowserAcceptHeader = true;
 });
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
+
+//Add cors configuration
+builder.Services.ConfigureCors();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
