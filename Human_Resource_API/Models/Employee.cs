@@ -12,7 +12,11 @@ namespace Human_Resource_API.Models
         public string LastName { get; set; }
         public string Position { get; set; }
         public int DepartmentId { get; set; }
+
+        [Required(ErrorMessage = "Contact Number is a required field.")]
         public string ContactNumber { get; set; }
+
+        [Required(ErrorMessage = "Email is a required field.")]
         public string Email { get; set; }
         public DateTime StartDate { get; set; } 
         public DateTime? TerminationDate { get; set; }

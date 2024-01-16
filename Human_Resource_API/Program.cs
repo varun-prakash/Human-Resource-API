@@ -21,6 +21,8 @@ builder.Services.AddControllers(option =>
     option.RespectBrowserAcceptHeader = true;
 });
 
+builder.Services.AddAuthentication();
+builder.Services.ConfigureIdentity();
 
 //Add cors configuration
 builder.Services.ConfigureCors();
@@ -39,6 +41,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication(); 
 app.UseAuthorization();
 
 

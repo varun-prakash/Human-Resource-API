@@ -25,8 +25,17 @@ namespace Human_Resource_API.Controllers
 
         public ActionResult<IEnumerable<Employee>> GetEmployees()
         {
-            _logger.LogInformation("Making Get All Employees call");
-            return Ok(_db.Employees.ToList());
+            try
+            {
+                _logger.LogInformation("Making Get All Employees call");
+                var employees = _db.Employees.ToList();
+                return Ok(employees);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError("GetEmployee failed with the error :"+ ex.Message);
+                throw;
+            }
         }
 
 
@@ -37,11 +46,19 @@ namespace Human_Resource_API.Controllers
 
         public ActionResult<IEnumerable<Employee>> GetEmployee(int id)
         {
-            _logger.LogInformation("Making Get Employee with id call");
-            if (id <= 0) return BadRequest();
-            Employee employee = _db.Employees.FirstOrDefault(i => (i.EmployeeId == id));
-            if (employee == null) return NotFound();
-            return Ok(employee);
+            try {
+                _logger.LogInformation("Making Get Employee with id call");
+                if (id <= 0) return BadRequest();
+                Employee employee = _db.Employees.FirstOrDefault(i => (i.EmployeeId == id));
+                if (employee == null) return NotFound();
+                return Ok(employee);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError("GetEmployee by Id failed with the error :" + ex.Message);
+                throw;
+            }
+            
         }
 
 
