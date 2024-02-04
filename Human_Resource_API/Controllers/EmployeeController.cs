@@ -89,7 +89,7 @@ namespace Human_Resource_API.Controllers
        
         public ActionResult<Employee> UpdateEmployee(int id, [FromBody]Employee updatedEmplpoyee)
         {
-            _logger.LogInformation("Making upfate Employee call");
+            _logger.LogInformation("Making update Employee call");
 
             if (updatedEmplpoyee == null) return BadRequest();
 
