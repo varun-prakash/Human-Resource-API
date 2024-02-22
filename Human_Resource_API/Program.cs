@@ -2,7 +2,7 @@ using Human_Resource_API.Data;
 using Microsoft.EntityFrameworkCore;
 using Human_Resource_API.Extensions;
 using Serilog;
-
+using Human_Resource_API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +29,7 @@ builder.Services.ConfigureCors();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
 var app = builder.Build();
 

@@ -1,124 +1,58 @@
-﻿using Human_Resource_API.Data;
-using Human_Resource_API.Models;
+﻿using Human_Resource_API.Models;
+using Human_Resource_API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Human_Resource_API.Controllers
 {
-    [Route($"api/HR")]
+    [Route("api/HR")]
     [ApiController]
     public class EmployeeController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IEmployeeService _employeeService;
         private readonly ILogger<EmployeeController> _logger;
 
-        public EmployeeController(ApplicationDbContext db, ILogger<EmployeeController> logger)
+        public EmployeeController(IEmployeeService employeeService, ILogger<EmployeeController> logger)
         {
+            _employeeService = employeeService;
             _logger = logger;
-            _db = db;
         }
 
-       
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-
         public ActionResult<IEnumerable<Employee>> GetEmployees()
         {
-            try
-            {
-                _logger.LogInformation("Making Get All Employees call");
-                var employees = _db.Employees.ToList();
-                return Ok(employees);
-            }
-            catch(Exception ex)
-            {
-                _logger.LogError("GetEmployee failed with the error :"+ ex.Message);
-                throw;
-            }
+            var employees = _employeeService.GetAllEmployees();
+            return Ok(employees);
         }
-
 
         [HttpGet("{id:int}", Name = "GetEmployee")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-
-        public ActionResult<IEnumerable<Employee>> GetEmployee(int id)
+        public ActionResult<Employee> GetEmployee(int id)
         {
-            try {
-                _logger.LogInformation("Making Get Employee with id call");
-                if (id <= 0) return BadRequest();
-                Employee employee = _db.Employees.FirstOrDefault(i => (i.EmployeeId == id));
-                if (employee == null) return NotFound();
-                return Ok(employee);
-            }
-            catch(Exception ex)
-            {
-                _logger.LogError("GetEmployee by Id failed with the error :" + ex.Message);
-                throw;
-            }
-            
+            var employee = _employeeService.GetEmployeeById(id);
+            if (employee == null) return NotFound();
+            return Ok(employee);
         }
 
-
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-
         public ActionResult<Employee> CreateEmployee([FromBody] Employee newEmployee)
         {
-            _logger.LogInformation("Making create Employee call");
-
-            if (newEmployee == null) return BadRequest();
-
-            var empId = _db.Employees.FirstOrDefault<Employee>(i => (i.EmployeeId == newEmployee.EmployeeId));
-
-            if (empId == null)
-            {
-                _db.Employees.Add(newEmployee);
-                _db.SaveChanges();
-                return CreatedAtRoute("GetEmployee", new { id = newEmployee.EmployeeId });
-            }
-            return BadRequest();
-
+            var createdEmployee = _employeeService.CreateEmployee(newEmployee);
+            return CreatedAtRoute("GetEmployee", new { id = createdEmployee.EmployeeId }, createdEmployee);
         }
 
         [HttpPut("{id:int}")]
-       
-        public ActionResult<Employee> UpdateEmployee(int id, [FromBody]Employee updatedEmplpoyee)
+        public ActionResult<Employee> UpdateEmployee(int id, [FromBody] Employee updatedEmployee)
         {
-            _logger.LogInformation("Making update Employee call");
-
-            if (updatedEmplpoyee == null) return BadRequest();
-
-            var getId = _db.Employees.FirstOrDefault(i => i.EmployeeId == id);
-            if (getId == null) return BadRequest();
-
-            if (updatedEmplpoyee.EmployeeId != id) return BadRequest();
-            
-            _db.Employees.Update(updatedEmplpoyee);
-            _db.SaveChanges();
-
+            var employee = _employeeService.UpdateEmployee(id, updatedEmployee);
+            if (employee == null) return BadRequest();
             return NoContent();
         }
 
-
-        [HttpDelete]
-
+        [HttpDelete("{id:int}")]
         public ActionResult<Employee> RemoveEmployee(int id)
         {
-            if(id==0) return BadRequest();
-            var empId = _db.Employees.FirstOrDefault(i=> (i.EmployeeId == id));
-            if (empId == null) return BadRequest();
-
-            _db.Remove(empId);
-            _db.SaveChanges();
-
-            return Ok(empId);
+            var employee = _employeeService.DeleteEmployee(id);
+            if (employee == null) return NotFound();
+            return Ok(employee);
         }
-
-
     }
 }
