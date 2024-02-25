@@ -38,14 +38,21 @@ namespace Human_Resource_API.Repositories
             var employee = await _context.Employees.FirstOrDefaultAsync(e => e.EmployeeId == id);
             if (employee == null)
             {
-                // Handle the case where the employee doesn't exist, e.g., throw an exception or return
                 throw new KeyNotFoundException("Employee not found with ID " + id);
             }
 
             // Update properties
             employee.FirstName = employeeToUpdate.FirstName;
             employee.LastName = employeeToUpdate.LastName;
-            // Add other properties to update as necessary
+            employee.Email = employeeToUpdate.Email;
+            employee.StartDate = employeeToUpdate.StartDate;
+            employee.ContactNumber = employeeToUpdate.ContactNumber;
+            employee.Position = employeeToUpdate.Position;
+            employee.DepartmentId = employeeToUpdate.DepartmentId;
+            employee.TerminationDate = employeeToUpdate.TerminationDate;
+            employee.TerminationReason = employeeToUpdate.TerminationReason;
+            employee.IsActive = employeeToUpdate.IsActive;
+
 
             _context.Employees.Update(employee);
             await _context.SaveChangesAsync();

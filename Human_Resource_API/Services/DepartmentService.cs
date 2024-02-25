@@ -1,54 +1,51 @@
 ﻿using Human_Resource_API.Data;
 using Human_Resource_API.Models;
-    
+using Human_Resource_API.Repositories;
 
 namespace Human_Resource_API.Services
 {
     public class DepartmentService : IDepartmentService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDepartmentRepository _departmentRepository;
 
-        public DepartmentService(ApplicationDbContext context)
+        public DepartmentService(IDepartmentRepository departmentRepository)
         {
-            _context = context;
+            _departmentRepository = departmentRepository;
         }
 
         public IEnumerable<Department> GetAllDepartments()
         {
-            return _context.Departments.ToList();
+            return _departmentRepository.GetAllDepartmentsAsync().Result;
         }
 
         public Department GetDepartmentById(int id)
         {
-            return _context.Departments.FirstOrDefault(d => d.DepartmentId == id);
+            return _departmentRepository.GetDepartmentbyIdAsync(id).Result;
         }
 
         public Department CreateDepartment(Department department)
         {
-            _context.Departments.Add(department);
-            _context.SaveChanges();
-            return department;
+            return _departmentRepository.AddDepartmentAsync(department).Result;
+            
         }
 
         public Department UpdateDepartment(int id, Department department)
         {
             if (id != department.DepartmentId)
             {
-                return null; // Or throw an exception based on your error handling policy
+                return null; 
             }
 
-            _context.Departments.Update(department);
-            _context.SaveChanges();
+            _departmentRepository.UpdateDepartmentAsync(id, department).Wait();
             return department;
         }
 
         public Department DeleteDepartment(int id)
         {
-            var department = _context.Departments.Find(id);
+            var department = GetDepartmentById(id);
             if (department != null)
             {
-                _context.Departments.Remove(department);
-                _context.SaveChanges();
+                _departmentRepository.DeleteDepartmentAsync(id).Wait();
                 return department;
             }
             return null;

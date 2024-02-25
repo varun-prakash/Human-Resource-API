@@ -17,8 +17,6 @@ namespace Human_Resource_API.Services
 
         public IEnumerable<Employee> GetAllEmployees()
         {
-            // Assuming repository methods are async, you may need to adjust this method to be async as well.
-            // For now, we're calling Result to synchronously wait on the task. Consider refactoring to async/await.
             return _employeeRepository.GetAllEmployeesAsync().Result;
         }
 

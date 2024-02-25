@@ -84,14 +84,14 @@ namespace Human_Resource_API.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        public ActionResult<Department> RemoveDepartment(int id)
+        public IActionResult RemoveDepartment(int id)
         {
             _logger.LogInformation($"Making remove Department with id={id} call");
 
             var department = _departmentService.DeleteDepartment(id);
             if (department == null) return NotFound();
 
-            return Ok(department);
+            return NoContent();
         }
     }
 }

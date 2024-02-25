@@ -10,11 +10,6 @@ namespace Human__Resource_API.test
     internal class TestingData
     {
 
-
-        
-
-
-
         public static List<Employee> GetFakeEmployeeList()
         {
             return new List<Employee>()
@@ -46,5 +41,26 @@ new Employee
 
     };
         }
+
+
+        public static List<Department> GetFakeDepartments()
+        {
+            return new List<Department>()
+            {
+                new Department
+                {
+                    DepartmentId = 1,
+                    DepartmentName = "Enngineering"
+                },
+
+                new Department
+                {
+                    DepartmentId = 2,
+                    DepartmentName = "Accounts"
+                }
+            };
+
+        }
+
     }
 }
