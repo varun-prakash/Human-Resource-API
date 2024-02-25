@@ -48,11 +48,12 @@ namespace Human_Resource_API.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        public ActionResult<Employee> RemoveEmployee(int id)
+        public IActionResult RemoveEmployee(int id)
         {
             var employee = _employeeService.DeleteEmployee(id);
             if (employee == null) return NotFound();
-            return Ok(employee);
+            return NoContent();
         }
+
     }
 }

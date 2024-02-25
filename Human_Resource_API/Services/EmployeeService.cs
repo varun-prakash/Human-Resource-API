@@ -1,50 +1,55 @@
-﻿using Human_Resource_API.Data;
-using Human_Resource_API.Models;
+﻿using Human_Resource_API.Models;
+using Human_Resource_API.Repositories;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Human_Resource_API.Services
 {
     public class EmployeeService : IEmployeeService
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IEmployeeRepository _employeeRepository;
 
-        public EmployeeService(ApplicationDbContext db)
+        public EmployeeService(IEmployeeRepository employeeRepository)
         {
-            _db = db;
+            _employeeRepository = employeeRepository;
         }
 
         public IEnumerable<Employee> GetAllEmployees()
         {
-            return _db.Employees.ToList();
+            // Assuming repository methods are async, you may need to adjust this method to be async as well.
+            // For now, we're calling Result to synchronously wait on the task. Consider refactoring to async/await.
+            return _employeeRepository.GetAllEmployeesAsync().Result;
         }
 
         public Employee GetEmployeeById(int id)
         {
-            return _db.Employees.FirstOrDefault(e => e.EmployeeId == id);
+            // Same note about async applies here.
+            return _employeeRepository.GetEmployeeByIdAsync(id).Result;
         }
 
         public Employee CreateEmployee(Employee newEmployee)
         {
-            _db.Employees.Add(newEmployee);
-            _db.SaveChanges();
-            return newEmployee;
+            // Assuming AddEmployeeAsync is implemented in the repository.
+            return _employeeRepository.AddEmployeeAsync(newEmployee).Result;
         }
 
         public Employee UpdateEmployee(int id, Employee updatedEmployee)
         {
             if (updatedEmployee.EmployeeId != id) return null;
 
-            _db.Employees.Update(updatedEmployee);
-            _db.SaveChanges();
+            // Assuming UpdateEmployeeAsync is implemented in the repository.
+            _employeeRepository.UpdateEmployeeAsync(id,updatedEmployee).Wait();
             return updatedEmployee;
         }
 
         public Employee DeleteEmployee(int id)
         {
-            var employee = _db.Employees.FirstOrDefault(e => e.EmployeeId == id);
+            var employee = GetEmployeeById(id);
             if (employee != null)
             {
-                _db.Employees.Remove(employee);
-                _db.SaveChanges();
+                // Assuming DeleteEmployeeAsync is implemented in the repository.
+                _employeeRepository.DeleteEmployeeAsync(id).Wait();
                 return employee;
             }
             return null;
