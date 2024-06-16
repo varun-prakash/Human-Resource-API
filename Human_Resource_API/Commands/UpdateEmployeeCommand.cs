@@ -5,7 +5,7 @@ namespace Human_Resource_API.Commands
 {
     public class UpdateEmployeeCommand : IRequest
     {
-        public int EmployeeId { get; set; }
+        public int EmployeeId { get; }
         public Employee Employee { get;}
 
         public UpdateEmployeeCommand(int employeeId, Employee employee)
