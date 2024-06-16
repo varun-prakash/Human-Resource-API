@@ -11,41 +11,55 @@ using Human_Resource_API.Handlers.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Log.Logger = new LoggerConfiguration().MinimumLevel.Information().WriteTo.File("log/logs.txt", rollingInterval: RollingInterval.Day).CreateLogger();
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.File("log/logs.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
 builder.Host.UseSerilog();
-// Add services to the container.
-builder.Services.AddDbContext<ApplicationDbContext>(option =>
+
+// Add services to the container
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection")));
+
+// Add Controllers
+builder.Services.AddControllers(options =>
 {
-    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
+    options.ReturnHttpNotAcceptable = true;
+    options.RespectBrowserAcceptHeader = true;
 });
 
-builder.Services.AddControllers(option =>
-{
-    option.ReturnHttpNotAcceptable = true;
-    option.RespectBrowserAcceptHeader = true;
-});
-
+// Add Authentication and Identity
 builder.Services.AddAuthentication();
 builder.Services.ConfigureIdentity();
 
-//Add cors configuration
+// Add CORS configuration
 builder.Services.ConfigureCors();
 
+// Add MediatR
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Register Repositories
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+
+// Register Services
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+
+// Register Handlers
 builder.Services.AddScoped<CreateEmployeeCommandHandler>();
 builder.Services.AddScoped<UpdateEmployeeCommandHandler>();
 builder.Services.AddScoped<DeleteEmployeeCommandHandler>();
 builder.Services.AddScoped<GetEmployeesQueryHandler>();
 builder.Services.AddScoped<GetEmployeeQueryHandler>();
 
+// Add Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -54,9 +68,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication(); 
+app.UseAuthentication();
 app.UseAuthorization();
-
 
 app.MapControllers();
 
