@@ -4,6 +4,10 @@ using Human_Resource_API.Extensions;
 using Serilog;
 using Human_Resource_API.Services;
 using Human_Resource_API.Repositories;
+using MediatR;
+using System.Reflection;
+using Human_Resource_API.Handlers.Commands;
+using Human_Resource_API.Handlers.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,11 +32,16 @@ builder.Services.ConfigureIdentity();
 //Add cors configuration
 builder.Services.ConfigureCors();
 
+builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
-builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<CreateEmployeeCommandHandler>();
+builder.Services.AddScoped<UpdateEmployeeCommandHandler>();
+builder.Services.AddScoped<DeleteEmployeeCommandHandler>();
+builder.Services.AddScoped<GetEmployeesQueryHandler>();
+builder.Services.AddScoped<GetEmployeeQueryHandler>();
 
 var app = builder.Build();
 

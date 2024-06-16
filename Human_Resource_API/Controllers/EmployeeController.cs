@@ -1,59 +1,63 @@
-﻿using Human_Resource_API.Models;
-using Human_Resource_API.Services;
+﻿using Human_Resource_API.Commands;
+using Human_Resource_API.Models;
+using Human_Resource_API.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Human_Resource_API.Controllers
 {
     [Route("api/HR")]
     [ApiController]
-    public class EmployeeController : Controller
+    public class EmployeeController : ControllerBase
     {
-        private readonly IEmployeeService _employeeService;
-        private readonly ILogger<EmployeeController> _logger;
+        private readonly IMediator _mediator;
 
-        public EmployeeController(IEmployeeService employeeService, ILogger<EmployeeController> logger)
+        public EmployeeController(IMediator mediator)
         {
-            _employeeService = employeeService;
-            _logger = logger;
+            _mediator = mediator;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Employee>> GetEmployees()
+        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
         {
-            var employees = _employeeService.GetAllEmployees();
+            var query = new GetEmployeesQuery();
+            var employees = await _mediator.Send(query);
             return Ok(employees);
         }
 
         [HttpGet("{id:int}", Name = "GetEmployee")]
-        public ActionResult<Employee> GetEmployee(int id)
+        public async Task<ActionResult<Employee>> GetEmployee(int id)
         {
-            var employee = _employeeService.GetEmployeeById(id);
+            var query = new GetEmployeeQuery(id);
+            var employee = await _mediator.Send(query);
             if (employee == null) return NotFound();
             return Ok(employee);
         }
 
         [HttpPost]
-        public ActionResult<Employee> CreateEmployee([FromBody] Employee newEmployee)
+        public async Task<ActionResult<Employee>> CreateEmployee([FromBody] Employee newEmployee)
         {
-            var createdEmployee = _employeeService.CreateEmployee(newEmployee);
+            var command = new CreateEmployeeCommand(newEmployee);
+            var createdEmployee = await _mediator.Send(command);
             return CreatedAtRoute("GetEmployee", new { id = createdEmployee.EmployeeId }, createdEmployee);
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult<Employee> UpdateEmployee(int id, [FromBody] Employee updatedEmployee)
+        public async Task<IActionResult> UpdateEmployee(int id, [FromBody] Employee updatedEmployee)
         {
-            var employee = _employeeService.UpdateEmployee(id, updatedEmployee);
-            if (employee == null) return BadRequest();
+            var command = new UpdateEmployeeCommand(id, updatedEmployee);
+            await _mediator.Send(command);
             return NoContent();
         }
 
         [HttpDelete("{id:int}")]
-        public IActionResult RemoveEmployee(int id)
+        public async Task<IActionResult> RemoveEmployee(int id)
         {
-            var employee = _employeeService.DeleteEmployee(id);
-            if (employee == null) return NotFound();
-            return NoContent();
+            var command = new DeleteEmployeeCommand(id);
+            await _mediator.Send(command);
+            return Ok();
         }
-
     }
 }
