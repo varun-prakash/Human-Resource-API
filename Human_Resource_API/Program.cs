@@ -2,8 +2,6 @@ using Human_Resource_API.Data;
 using Microsoft.EntityFrameworkCore;
 using Human_Resource_API.Extensions;
 using Serilog;
-using Human_Resource_API.Services;
-using Human_Resource_API.Repositories;
 using MediatR;
 using System.Reflection;
 using Human_Resource_API.Handlers.Commands;
@@ -40,11 +38,6 @@ builder.Services.ConfigureCors();
 // Add MediatR
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 
-// Register Repositories
-builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
-
-// Register Services
-builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 
 // Register Handlers
 builder.Services.AddScoped<CreateEmployeeCommandHandler>();
@@ -52,6 +45,11 @@ builder.Services.AddScoped<UpdateEmployeeCommandHandler>();
 builder.Services.AddScoped<DeleteEmployeeCommandHandler>();
 builder.Services.AddScoped<GetEmployeesQueryHandler>();
 builder.Services.AddScoped<GetEmployeeQueryHandler>();
+builder.Services.AddScoped<CreateDepartmentCommandHandler>();
+builder.Services.AddScoped<UpdateDepartmentCommandHandler>();
+builder.Services.AddScoped<DeleteDepartmentCommandHandler>();
+builder.Services.AddScoped<GetDepartmentsQueryHandler>();
+builder.Services.AddScoped<GetDepartmentQueryHandler>();
 
 // Add Swagger
 builder.Services.AddEndpointsApiExplorer();

@@ -21,6 +21,7 @@ namespace Human_Resource_API.Handlers.Commands
                 throw new KeyNotFoundException("Employee Does Not Exist");
             }
 
+            _context.Employees.Remove(employee);
             await _context.SaveChangesAsync(cancellationToken);
             return Unit.Value;
 

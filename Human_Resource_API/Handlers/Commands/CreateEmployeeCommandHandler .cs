@@ -1,10 +1,11 @@
 ﻿using Human_Resource_API.Commands;
 using Human_Resource_API.Data;
 using Human_Resource_API.Models;
+using MediatR;
 
 namespace Human_Resource_API.Handlers.Commands
 {
-    public class CreateEmployeeCommandHandler
+    public class CreateEmployeeCommandHandler : IRequestHandler<CreateEmployeeCommand, Employee>
     {
         private readonly ApplicationDbContext _context;
 
